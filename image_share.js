@@ -2,9 +2,20 @@ Images = new Mongo.Collection("images");
 console.log(Images.find().count());
 
 if (Meteor.isClient) {
-    //Template.images.helpers({images:image_data});
+      Accounts.ui.config({
+         passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
+      });
 
     Template.images.helpers({images:Images.find({},{sort:{createdOn:-1,rating:-1}})});
+
+    Template.body.helpers({username:function(){
+      if (Meteor.user()){
+        return Meteor.user().username;
+      } else {
+        return "Hello Anonymous User";
+      }
+
+    }});
 
     Template.images.events(
       {  'click .js-image':function(event){

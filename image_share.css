@@ -4,3 +4,11 @@
 	max-height: 500px;
 	min-height: 500px;
 }
+
+.thumbnail-img{
+	max-height: 300px;
+}
+
+body{
+	padding-top: 60px;
+}
