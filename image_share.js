@@ -6,7 +6,22 @@ if (Meteor.isClient) {
          passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
       });
 
-    Template.images.helpers({images:Images.find({},{sort:{createdOn:-1,rating:-1}})});
+    Template.images.helpers({
+      images:function(){
+        if(Session.get("userFilter")){
+          return Images.find({createdBy:Session.get("userFilter")},{sort:{createdOn:-1,rating:-1}});
+        } else {
+          return Images.find({},{sort:{createdOn:-1,rating:-1}});
+        }},
+      getUser:function(user_id){
+        var user = Meteor.users.findOne({_id:user_id});
+        if (user){
+          return user.username;
+        } else {
+          return "Anonymous";
+        }
+      }
+    });
 
     Template.body.helpers({username:function(){
       if (Meteor.user()){
@@ -41,6 +56,10 @@ if (Meteor.isClient) {
           'click .js-show-image-form':function(event){
             $("#image_add_form").modal("show");
           
+          },
+          'click .js-set-image-filter':function(event){
+            Session.set("userFilter",this.createdBy);
+          
           }
       });
 
@@ -51,12 +70,14 @@ if (Meteor.isClient) {
         img_alt = event.target.img_alt.value;
         console.log("src "+img_src+"img_alt "+img_alt);
 
-
+      if (Meteor.user()){
         Images.insert({
           "img_src":img_src,
           "img_alt":img_alt,
-          createdOn:new Date()
+          createdOn:new Date(),
+          createdBy:Meteor.user()._id
         });
+        }
       }
     });
 }
